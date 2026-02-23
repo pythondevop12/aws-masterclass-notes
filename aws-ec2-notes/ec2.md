@@ -113,7 +113,7 @@ Is your bottleneck...
 | Convertible RI | Medium (can change family) | Up to 54% |
 | Compute Savings Plan | High (any instance type/region) | Up to 66% |
 
-> 💡 **Pro Tip:** In 2026, **Savings Plans are preferred over RIs** — more flexible and simpler to manage.
+> 💡 **Pro Tip:**  **Savings Plans are preferred over RIs** — more flexible and simpler to manage.
 
 ### 🟠 Spot Instances
 - **Bid for unused AWS capacity** at massive discounts.
@@ -127,28 +127,6 @@ Is your bottleneck...
 
 ---
 
-## 5. Storage: EBS, Instance Store & EFS
-
-### 📦 EBS (Elastic Block Store) — Network-Attached Disk
-
-| Volume Type | Use Case | Max IOPS | Max Throughput |
-| :--- | :--- | :--- | :--- |
-| gp3 (General Purpose SSD) | Default for most workloads | 16,000 | 1,000 MB/s |
-| io2 Block Express | High-perf databases (Oracle, SQL Server) | 256,000 | 4,000 MB/s |
-| st1 (Throughput HDD) | Big data, log processing | 500 | 500 MB/s |
-| sc1 (Cold HDD) | Archival, infrequent access | 250 | 250 MB/s |
-
-> ✅ **Best Practice:** Always use **gp3** over gp2 — cheaper AND independently configurable IOPS/throughput.
-
-### 💨 Instance Store — Ephemeral Local NVMe
-- Physically attached to the host — ultra-low latency.
-- ⚠️ **Data is LOST** when instance is stopped, terminated, or fails.
-- **Use for:** Temporary buffers, caches, Spark shuffle, scratch space.
-
-### 📁 EFS (Elastic File System) — Shared Network Filesystem
-- Mount the **same filesystem across multiple EC2 instances** simultaneously.
-- Automatically scales — no provisioning needed.
-- **Use for:** Shared configs, CMS media files, ML training data.
 
 ```
 Stop vs. Terminate
@@ -209,7 +187,7 @@ curl http://169.254.169.254/latest/meta-data/placement/region
 curl http://169.254.169.254/latest/meta-data/spot/termination-time
 ```
 
-### Cost Estimator (Approximate 2026 US-East-1 Pricing)
+### Cost Estimator (Approximate US-East-1 Pricing)
 
 | Instance | On-Demand/hr | 1-Yr RI/hr | Spot/hr (est.) |
 | :--- | :---: | :---: | :---: |
