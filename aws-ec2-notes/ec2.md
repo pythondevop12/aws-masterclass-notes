@@ -10,8 +10,7 @@
 2. [Decoding the Instance Name](#2-decoding-the-name-t3medium)
 3. [Instance Families](#3-instance-families-the-right-tool-for-the-job)
 4. [Purchasing Options: Save Up to 90%](#4-purchasing-options-save-up-to-90)
-5. [Storage: EBS, Instance Store & EFS](#5-storage-ebs-instance-store--efs)
-6. [Quick Reference Cheatsheet](#6-quick-reference-cheatsheet)
+5. [Quick Reference Cheatsheet](#6-quick-reference-cheatsheet)
 
 ---
 
@@ -143,7 +142,7 @@ Stop vs. Terminate
 
 ---
 
-## 6. Quick Reference Cheatsheet
+## 5. Quick Reference Cheatsheet
 
 ### Common AWS CLI Commands
 
