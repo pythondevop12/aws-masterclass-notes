@@ -10,7 +10,8 @@
 2. [Decoding the Instance Name](#2-decoding-the-name-t3medium)
 3. [Instance Families](#3-instance-families-the-right-tool-for-the-job)
 4. [Purchasing Options: Save Up to 90%](#4-purchasing-options-save-up-to-90)
-5. [Quick Reference Cheatsheet](#6-quick-reference-cheatsheet)
+5. [EBS: Elastic Block Store](#5-ebs-elastic-block-store)
+6. [Quick Reference Cheatsheet](#6-quick-reference-cheatsheet)
 
 ---
 
@@ -126,7 +127,6 @@ Is your bottleneck...
 
 ---
 
-
 ```
 Stop vs. Terminate
 
@@ -142,7 +142,66 @@ Stop vs. Terminate
 
 ---
 
-## 5. Quick Reference Cheatsheet
+## 5. EBS: Elastic Block Store
+
+**Elastic Block Store (EBS)** is the persistent, network-attached storage used with EC2 instances. Think of it as an external hard drive that automatically stays connected to your instance — and survives reboots and even instance termination (if configured).
+
+> 💡 **Mental Model:** EBS is like a USB drive in the cloud — you can attach it to one EC2 instance at a time, detach it, and re-attach it elsewhere. Your data stays intact even when the instance is off.
+
+### Key Characteristics
+
+- **Persistent by default** — data survives instance stop/restart (unlike instance store).
+- **Availability Zone-scoped** — an EBS volume lives in a specific AZ and can only attach to instances in the same AZ.
+- **Snapshots** — point-in-time backups stored in S3; used to copy volumes across AZs or regions.
+- **Encryption** — volumes can be encrypted at rest using AWS KMS, with zero performance overhead on modern instances.
+
+### EBS Volume Types
+
+| Type | Name | Best For | Max IOPS | Max Throughput |
+| :--- | :--- | :--- | :---: | :---: |
+| **gp3** | General Purpose SSD | Boot volumes, dev/test, most workloads | 16,000 | 1,000 MB/s |
+| **gp2** | General Purpose SSD (legacy) | Older workloads (prefer gp3) | 16,000 | 250 MB/s |
+| **io2 Block Express** | Provisioned IOPS SSD | Critical databases (Oracle, SAP HANA) | 256,000 | 4,000 MB/s |
+| **st1** | Throughput Optimized HDD | Big data, log processing, data warehouses | 500 | 500 MB/s |
+| **sc1** | Cold HDD | Infrequently accessed archives | 250 | 250 MB/s |
+
+> 💡 **Pro Tip:** **Always use gp3 over gp2** — it's cheaper and lets you independently scale IOPS and throughput without increasing volume size.
+
+### 🔍 How to Choose
+
+```
+Workload type...
+
+  OS boot / general apps?              ──► gp3 (default choice)
+  High-performance database?           ──► io2 Block Express
+  Sequential big-data / logs?          ──► st1
+  Cold archive / rarely accessed?      ──► sc1
+```
+
+### Common CLI Commands
+
+```bash
+# Create a 20 GiB gp3 volume
+aws ec2 create-volume \
+  --size 20 \
+  --volume-type gp3 \
+  --availability-zone us-east-1a
+
+# Attach volume to an instance
+aws ec2 attach-volume \
+  --volume-id vol-0abcdef1234567890 \
+  --instance-id i-1234567890abcdef0 \
+  --device /dev/xvdf
+
+# Take a snapshot
+aws ec2 create-snapshot \
+  --volume-id vol-0abcdef1234567890 \
+  --description "my-backup-$(date +%Y%m%d)"
+```
+
+---
+
+## 6. Quick Reference Cheatsheet
 
 ### Common AWS CLI Commands
 
