@@ -175,75 +175,9 @@ resource "aws_route" "vpc_b_to_a" {
 
 ---
 
-## 6. VPC Peering vs Transit Gateway
-
-| Feature | VPC Peering | Transit Gateway |
-|---------|------------|-----------------|
-| Cost | Free (+ data transfer) | Per attachment ($0.05/hr) + data |
-| Transitive routing | ❌ No | ✅ Yes |
-| Max connections | 125 per VPC | 5,000 attachments |
-| Cross-region | ✅ Yes | ✅ Yes |
-| Cross-account | ✅ Yes | ✅ Yes |
-| Setup complexity | Low | Medium-High |
-| Encryption in-flight | ❌ No | ❌ No (add VPN for that) |
-| **Best for** | 2–5 VPCs, simple topology | Many VPCs, hub-spoke, enterprise |
-
-**Rule of thumb:** Use peering for small setups. Switch to Transit Gateway when you need transitive routing or have more than 5 VPCs.
-
 ---
 
-## 7. Limitations & Gotchas
-
-### ❌ No Transitive Peering
-```
-A ←→ B ←→ C   ≠   A ←→ C
-
-You MUST create: A ←→ C directly
-```
-
-### ❌ No Overlapping CIDRs
-```
-VPC A: 10.0.0.0/16
-VPC B: 10.0.0.0/16   ← WILL FAIL — plan CIDRs before you create VPCs
-```
-
-### ⚠️ Route Tables Are Manual
-Forgetting one side = silent traffic drop. Checklist:
-- [ ] VPC A route table updated
-- [ ] VPC B route table updated
-- [ ] Security groups updated on destination resources
-
-### ⚠️ Security Groups — Cross-Region Limitation
-- Same region: reference by SG ID (`sg-xxxxxx`) ✅
-- Cross-region: must use CIDR block (`10.0.0.0/16`) ✅
-
-### ⚠️ DNS Resolution
-By default, private DNS hostnames don't resolve across peers. Enable:
-```bash
-aws ec2 modify-vpc-peering-connection-options \
-  --vpc-peering-connection-id pcx-xxxxxxxxxxxxxxxxx \
-  --requester-peering-connection-options '{"AllowDnsResolutionFromRemoteVpc":true}' \
-  --accepter-peering-connection-options '{"AllowDnsResolutionFromRemoteVpc":true}'
-```
-
-### ⚠️ Max 125 Peering Connections per VPC
-Hard limit. At scale → use **Transit Gateway**.
-
----
-
-## 8. Troubleshooting
-
-| Symptom | Likely Cause | Fix |
-|---------|-------------|-----|
-| Connection stuck in `pending-acceptance` | Accepter hasn't accepted | Accept in accepter account/VPC |
-| Ping fails between instances | Missing route or SG rule | Check both route tables + SGs |
-| DNS doesn't resolve across VPCs | DNS resolution not enabled | Enable `AllowDnsResolutionFromRemoteVpc` |
-| `InvalidVpcPeeringConnectionID` error | Wrong pcx ID | Verify with `describe-vpc-peering-connections` |
-| Peering failed — overlapping CIDR | CIDRs conflict | Must recreate VPCs with unique CIDRs |
-
----
-
-## 9. Quick Reference Cheatsheet
+## 6. Quick Reference Cheatsheet
 
 ```bash
 # List all peering connections
@@ -264,7 +198,7 @@ aws ec2 describe-route-tables \
 
 ---
 
-## 10. Summary
+## 7. Summary
 
 ```
 VPC Peering = Private, low-latency, no-internet bridge between VPCs
@@ -272,9 +206,7 @@ VPC Peering = Private, low-latency, no-internet bridge between VPCs
 ✅ Plan unique CIDRs BEFORE creating VPCs
 ✅ Update route tables on BOTH sides
 ✅ Update security groups at the destination
-✅ Enable DNS resolution if using private hostnames
-❌ No transitive routing — use Transit Gateway at scale
-❌ Max 125 peering connections per VPC
+
 ```
 
 ---
